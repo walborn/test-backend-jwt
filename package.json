@@ -1,27 +1,29 @@
 {
-  "name": "test-backend-jwt",
-  "version": "1.0.0",
-  "main": "server.js",
+  "name": "backend",
+  "version": "0.1.0",
+  "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js",
+    "start": "node index.js",
+    "dev": "nodemon index.js",
     "test": "jest",
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "bcryptjs": "^2.4.3",
+    "bcrypt": "^5.0.0",
+    "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "dotenv-safe": "^8.2.0",
     "express": "^4.17.1",
     "express-jwt": "^5.3.3",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.9.14",
-    "uuid": "^8.0.0"
+    "mongoose": "^5.9.20",
+    "uuid": "^8.2.0"
   },
   "devDependencies": {
-    "jest": "^26.0.1",
+    "eslint": "^7.3.1",
+    "jest": "^26.1.0",
     "nodemon": "^2.0.4",
     "supertest": "^4.0.2"
   }

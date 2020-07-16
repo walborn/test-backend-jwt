@@ -3,9 +3,7 @@ const auth = require('../middleware/auth')
 const user = require('../controllers/user')
 
 
-router.get('/list', user.fetchList)
-
-// protected
+router.get('/list', auth, user.fetchList)
 router.get('/item/:id', auth, user.fetchItem)
 router.get('/me', auth, user.fetchMe)
 router.post('/item', auth, user.createItem)

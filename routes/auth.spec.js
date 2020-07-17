@@ -4,6 +4,8 @@ const tokens = require('../helpers/tokens')
 const app = require('../app')
 const User = require('../model/user')
 const { mongo } = require('../config')
+const jwt = require('jsonwebtoken')
+const bcrypt = require('bcrypt')
 
 
 
@@ -23,7 +25,7 @@ describe('Auth routes:', () => {
   })
 
   afterAll(async done => {
-    await User.drop()
+    await User.collection.drop()
     await mongoose.connection.close()
     server.close(done)
   })
@@ -41,12 +43,13 @@ describe('Auth routes:', () => {
 
   // User can successfully sign in
   it('sign in', async () => {
-    const user = new User({ email: 'test@test.com', password: 'WhatOneFoolCanUnderstandAnotherCan' })
+    const password = 'WhatOneFoolCanUnderstandAnotherCan'
+    const user = new User({ email: 'test@test.com', password: await bcrypt.hash(password, 8) })
     await user.save()
   
     const { access, refresh } = (await request
       .post('/auth/signin')
-      .send({ email: 'test@test.com', password: 'WhatOneFoolCanUnderstandAnotherCan' })
+      .send({ email: 'test@test.com', password })
       .expect(200)).body
     
     expect(typeof access).toBe('string')
@@ -80,12 +83,13 @@ describe('Auth routes:', () => {
 
   // User can get new access token using refresh token
   it('get new access token using refresh', async () => {
-    const user = new User({ email: 'test@test.com', password: 'NoPressureNoDiamonds' })
+    const password = 'NoPressureNoDiamonds'
+    const user = new User({ email: 'test@test.com', password: await bcrypt.hash(password, 8) })
     await user.save()
   
     const value = (await request
       .post('/auth/signin')
-      .send({ email: 'test@test.com', password: 'NoPressureNoDiamonds' })
+      .send({ email: 'test@test.com', password })
       .expect(200)).body.refresh
 
     const { access, refresh } = (await request
@@ -119,12 +123,13 @@ describe('Auth routes:', () => {
 
   // User can use refresh token only once
   it('each refresh can be used only once', async () => {
-    const user = new User({ email: 'test@test.com', password: 'StayFoolishToStaySane' })
+    const password = 'StayFoolishToStaySane'
+    const user = new User({ email: 'test@test.com', password: await bcrypt.hash(password, 8) })
     await user.save()
   
     const value = (await request
       .post('/auth/signin')
-      .send({ email: 'test@test.com', password: 'StayFoolishToStaySane' })
+      .send({ email: 'test@test.com', password })
       .expect(200)).body.refresh
 
     await request
@@ -140,12 +145,13 @@ describe('Auth routes:', () => {
 
   // Refresh tokens become invalid on sign out
   it('spoil refresh while sign out', async () => {
-    const user = new User({ email: 'test@test.com', password: 'WhenNothingGoesRightGoLeft' })
+    const password = 'WhenNothingGoesRightGoLeft'
+    const user = new User({ email: 'test@test.com', password: await bcrypt.hash(password, 8) })
     await user.save()
   
     const { access, refresh } = (await request
       .post('/auth/signin')
-      .send({ email: 'test@test.com', password: 'WhenNothingGoesRightGoLeft' })
+      .send({ email: 'test@test.com', password })
       .expect(200)).body
 
     await request
@@ -162,20 +168,21 @@ describe('Auth routes:', () => {
   
   // Multiple refresh tokens are valid
   it('multiple refresh', async () => {
-    const user = new User({ email: 'test@test.com', password: 'ProveThemWrong' })
+    const password = 'ProveThemWrong'
+    const user = new User({ email: 'test@test.com', password: await bcrypt.hash(password, 8) })
     await user.save()
 
     const refreshes = [
       (
         await request
           .post('/auth/signin')
-          .send({ email: 'test@test.com', password: 'ProveThemWrong' })
+          .send({ email: 'test@test.com', password })
           .expect(200)
       ).body.refresh,
       (
         await request
           .post('/auth/signin')
-          .send({ email: 'test@test.com', password: 'ProveThemWrong' })
+          .send({ email: 'test@test.com', password })
           .expect(200)
       ).body.refresh,
     ]

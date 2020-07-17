@@ -1,7 +1,12 @@
 const jwt = require('jsonwebtoken')
-const uuid = require('uuid/v4')
 const Refresh = require('../model/refresh')
 const { secret, token } = require('../config').jwt
+let uuid;
+try {
+  uuid = require('uuid/v4')
+} catch {
+  uuid = require('uuid').v4
+}
 
 
 const access = {

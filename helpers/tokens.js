@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken')
-const uuid = require('uuid/v4')
+const { v4 } = require('uuid')
 const Refresh = require('../model/refresh')
 const { secret, token } = require('../config').jwt
 
@@ -9,7 +9,7 @@ const access = {
 }
 
 const refresh = {
-  create: ({ uid, expiresIn = token.refresh.exrpireIn }) => jwt.sign({ uid, value: uuid() }, secret, { expiresIn }),
+  create: ({ uid, expiresIn = token.refresh.exrpireIn }) => jwt.sign({ uid, value: v4() }, secret, { expiresIn }),
   update: ({ uid, prev, next }) => Refresh
     .findOneAndRemove({ uid, value: prev }).exec()
     .then(() => Refresh.create({ uid, value: next })),

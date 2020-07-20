@@ -11,16 +11,13 @@ const requireProcessEnv = (name) => {
 module.exports = {
   env: process.env.NODE_ENV || 'development',
   port: requireProcessEnv('PORT'),
-  jwt: {
-    secret: requireProcessEnv('JWT_SECRET'),
-    token: {
-      access: {
-        exrpireIn: '30s',
-      },
-      refresh: {
-        exrpireIn: '300s',
-      }
-    },
+  access: {
+    secret: requireProcessEnv('JWT_ACCESS_SECRET'),
+    exrpireIn: '30s',
+  },
+  refresh: {
+    secret: requireProcessEnv('JWT_REFRESH_SECRET'),
+    exrpireIn: '300s',
   },
   mongo: {
     uri: requireProcessEnv('MONGODB_URI'),

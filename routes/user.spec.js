@@ -19,7 +19,7 @@ describe('User routes:', () => {
   })
 
   afterAll(async done => {
-    await User.drop()
+    await User.deleteMany()
     await mongoose.connection.close()
     server.close(done)
   })

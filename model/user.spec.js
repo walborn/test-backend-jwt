@@ -13,7 +13,7 @@ describe('User model test', () => {
   })
 
   afterAll(async () => {
-    await User.drop()
+    await User.deleteMany()
     await mongoose.connection.close()
   })
 
@@ -30,7 +30,6 @@ describe('User model test', () => {
   it('fetch user', async () => {
     const user = new User({ email: 'fetched@test.com', password: 'fetchedtest' })
     const { id } = await user.save()
-    console.log(id)
     const fetched = await User.findById(id)
     expect(fetched.email).toBe('fetched@test.com')
   })

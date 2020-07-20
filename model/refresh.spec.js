@@ -14,7 +14,7 @@ describe('Refresh model test', () => {
   })
 
   afterAll(async () => {
-    await Refresh.drop() 
+    await Refresh.deleteMany()
     await mongoose.connection.close()
   })
 

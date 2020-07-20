@@ -1,11 +1,11 @@
 const mongoose = require('mongoose')
 const supertest = require('supertest')
+const bcrypt = require('bcrypt')
 const tokens = require('../helpers/tokens')
 const app = require('../app')
 const User = require('../model/user')
+const Refresh = require('../model/refresh')
 const { mongo } = require('../config')
-
-
 
 
 // Test the JWT authentication
@@ -20,10 +20,12 @@ describe('Auth routes:', () => {
 
   beforeEach(async () => {
     await User.deleteMany()
+    await Refresh.deleteMany()
   })
 
   afterAll(async done => {
-    await User.drop()
+    await User.deleteMany()
+    await Refresh.deleteMany()
     await mongoose.connection.close()
     server.close(done)
   })
@@ -41,7 +43,8 @@ describe('Auth routes:', () => {
 
   // User can successfully sign in
   it('sign in', async () => {
-    const user = new User({ email: 'test@test.com', password: 'WhatOneFoolCanUnderstandAnotherCan' })
+    const password = await bcrypt.hash('WhatOneFoolCanUnderstandAnotherCan', 8)
+    const user = new User({ email: 'test@test.com', password })
     await user.save()
   
     const { access, refresh } = (await request
@@ -80,7 +83,8 @@ describe('Auth routes:', () => {
 
   // User can get new access token using refresh token
   it('get new access token using refresh', async () => {
-    const user = new User({ email: 'test@test.com', password: 'NoPressureNoDiamonds' })
+    const password = await bcrypt.hash('NoPressureNoDiamonds', 8)
+    const user = new User({ email: 'test@test.com', password })
     await user.save()
   
     const value = (await request
@@ -119,7 +123,8 @@ describe('Auth routes:', () => {
 
   // User can use refresh token only once
   it('each refresh can be used only once', async () => {
-    const user = new User({ email: 'test@test.com', password: 'StayFoolishToStaySane' })
+    const password = await bcrypt.hash('StayFoolishToStaySane', 8)
+    const user = new User({ email: 'test@test.com', password })
     await user.save()
   
     const value = (await request
@@ -140,7 +145,8 @@ describe('Auth routes:', () => {
 
   // Refresh tokens become invalid on sign out
   it('spoil refresh while sign out', async () => {
-    const user = new User({ email: 'test@test.com', password: 'WhenNothingGoesRightGoLeft' })
+    const password = await bcrypt.hash('WhenNothingGoesRightGoLeft', 8)
+    const user = new User({ email: 'test@test.com', password })
     await user.save()
   
     const { access, refresh } = (await request
@@ -162,7 +168,8 @@ describe('Auth routes:', () => {
   
   // Multiple refresh tokens are valid
   it('multiple refresh', async () => {
-    const user = new User({ email: 'test@test.com', password: 'ProveThemWrong' })
+    const password = await bcrypt.hash('ProveThemWrong', 8)
+    const user = new User({ email: 'test@test.com', password })
     await user.save()
 
     const refreshes = [
